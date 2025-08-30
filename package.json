@@ -1,0 +1,31 @@
+{
+  "name": "recipt-extractor",
+  "version": "1.0.0",
+  "description": "Mobile Suica automation tool for downloading receipts and history",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "playwright": "^1.55.0",
+    "typescript": "^5.9.2"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.2",
+    "@types/node": "^24.3.0",
+    "tsx": "^4.7.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "suica": "npm run build && npm run start",
+    "suica:history": "npm run build && node dist/index.js history",
+    "suica:charge": "npm run build && node dist/index.js charge",
+    "suica:both": "npm run build && node dist/index.js both",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check src/",
+    "lint:fix": "biome check src/ --write",
+    "format": "biome format src/ --write"
+  }
+}
