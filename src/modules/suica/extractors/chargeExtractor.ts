@@ -139,6 +139,7 @@ export class ChargeExtractor {
 		record: ChargeRecord,
 		year: number,
 		month: number,
+		recordNumber: number,
 	): Promise<void> {
 		// PDFダウンロード処理
 		const downloadPromise = this.page.waitForEvent("download", {
@@ -162,7 +163,8 @@ export class ChargeExtractor {
 					? `${dateParts[1].padStart(2, "0")}${dateParts[2].padStart(2, "0")}`
 					: record.date.replace(/\//g, "");
 
-			const fileName = `${yearMonth}_${monthDay}_${record.amount.replace(",", "")}円_チャージ_suica.pdf`;
+			// 連番を付けてファイル名の重複を防ぐ
+			const fileName = `${yearMonth}_${monthDay}_${record.amount.replace(",", "")}円_チャージ_${recordNumber}_suica.pdf`;
 			const filePath = getOutputPath(fileName);
 			await download.saveAs(filePath);
 
@@ -246,7 +248,7 @@ export class ChargeExtractor {
 			);
 
 			try {
-				await this.downloadChargePDF(record, year, month);
+				await this.downloadChargePDF(record, year, month, i + 1);
 				// 次のダウンロード前に少し待機
 				await this.page.waitForTimeout(1000);
 			} catch (error) {

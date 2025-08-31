@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
-import { config } from "@modules/config";
+import { config } from "@/modules/config";
 
 /**
  * 出力先ディレクトリのパスを取得
