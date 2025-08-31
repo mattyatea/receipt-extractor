@@ -12,6 +12,8 @@ export interface AppConfig {
 	jreUserPass: string;
 	/** 領収書の宛先会社名 */
 	recipientCompany: string;
+	/** 出力先ディレクトリ（オプション） */
+	outputDir?: string;
 }
 
 /**
@@ -24,4 +26,6 @@ export interface EnvVariables {
 	JRE_USER_PASS?: string;
 	/** 領収書の宛先会社名 */
 	RECIPIENT_COMPANY?: string;
+	/** 出力先ディレクトリ */
+	OUTPUT_DIR?: string;
 }

@@ -1,5 +1,6 @@
 import { Logger } from "@utils/logger";
 import { splitCompanyName } from "@utils/textConverter";
+import { getOutputPath, ensureOutputDir } from "@utils/pathUtils";
 import type { Page } from "playwright";
 import { STRINGS } from "@/constants";
 import type { ChargeRecord, TargetMonth } from "@/types";
@@ -162,9 +163,10 @@ export class ChargeExtractor {
 					: record.date.replace(/\//g, "");
 
 			const fileName = `${yearMonth}_${monthDay}_${record.amount.replace(",", "")}円_チャージ_suica.pdf`;
-			await download.saveAs(fileName);
+			const filePath = getOutputPath(fileName);
+			await download.saveAs(filePath);
 
-			logger.info(`チャージ領収書をダウンロード: ${fileName}`);
+			logger.info(`チャージ領収書をダウンロード: ${filePath}`);
 
 			// ボタンがdisabledになるまで少し待機
 			await this.page.waitForTimeout(500);
@@ -187,6 +189,9 @@ export class ChargeExtractor {
 	}
 
 	async extractAndDownloadAllCharges(targetMonth?: TargetMonth): Promise<void> {
+		// 出力先ディレクトリを確認・作成
+		await ensureOutputDir();
+		
 		// 対象年月を設定（指定されていない場合は現在月）
 		const now = new Date();
 		const year = targetMonth?.year || now.getFullYear();

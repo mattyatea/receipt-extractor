@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
 import { Logger } from "@utils/logger";
+import { getOutputPath, ensureOutputDir } from "@utils/pathUtils";
 import type { Page } from "playwright";
 import type { SuicaHistoryGroup, SuicaHistoryItem } from "@/types";
 
@@ -210,7 +211,8 @@ export class HistoryExtractor {
 		await this.page.getByRole("button", { name: "選択した履歴を印刷" }).click();
 		const download = await downloadPromise;
 
-		await download.saveAs(fileName);
+		const filePath = getOutputPath(fileName);
+		await download.saveAs(filePath);
 	}
 
 	async saveOrphanTransactionsToMarkdown(
@@ -232,9 +234,10 @@ export class HistoryExtractor {
 		}
 
 		const fileName = `${yearMonth}_orphan_transactions.md`;
-		await fs.writeFile(fileName, markdown, "utf-8");
+		const filePath = getOutputPath(fileName);
+		await fs.writeFile(filePath, markdown, "utf-8");
 		logger.info(
-			`\n⚠️ チャージ履歴と紐付かない取引を ${fileName} に保存しました`,
+			`\n⚠️ チャージ履歴と紐付かない取引を ${filePath} に保存しました`,
 		);
 	}
 
@@ -242,6 +245,9 @@ export class HistoryExtractor {
 		year: number;
 		month: number;
 	}): Promise<void> {
+		// 出力先ディレクトリを確認・作成
+		await ensureOutputDir();
+		
 		const allHistory = await this.extractAllHistory(targetMonth);
 		const { groups, orphanTransactions } =
 			this.groupHistoryByCharge(allHistory);
@@ -319,7 +325,8 @@ export class HistoryExtractor {
 
 			await this.downloadPDF(fileName);
 
-			logger.info(`グループ ${i + 1} のPDFを ${fileName} として保存しました`);
+			const filePath = getOutputPath(fileName);
+			logger.info(`グループ ${i + 1} のPDFを ${filePath} として保存しました`);
 
 			// 次のグループ処理前に少し待機
 			await this.page.waitForTimeout(1000);
